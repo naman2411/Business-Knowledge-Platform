@@ -5,7 +5,6 @@ FastAPI backend (Mongo + Chroma) with LLM chat and RAG (OpenAI → Ollama fallba
 - Auth (JWT)
 - Document upload + text/metadata storage in Mongo
 - Vector search over chunks (Chroma)
-- Knowledge Q&A over selected document(s) with strict context prompting
 - Chat endpoint with **OpenAI primary and automatic fallback to local Ollama**
 - Switchable routers (analytics/knowledge) via code or env flags
 
