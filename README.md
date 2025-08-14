@@ -50,3 +50,27 @@ $env:OLLAMA_USE_GENERATE = "1"
 
 # 5) run the API (port 8010)
 python -m uvicorn app.main:app --reload --port 8010
+
+---
+
+## 2) Add `.env.example`
+```powershell
+@'
+# Copy to .env and fill values
+LLM_PRIMARY=ollama
+OLLAMA_URL=http://127.0.0.1:11434
+LLM_MODEL=llama3.2:3b
+OLLAMA_USE_GENERATE=1
+OPENAI_API_KEY=
+OPENAI_MODEL=o4-mini
+
+MONGODB_URI=mongodb://localhost:27017/<db>
+JWT_SECRET=change_me
+ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+
+# Optional / for knowledge router later
+CHROMA_PATH=chroma-data
+# CHROMA_HOST=127.0.0.1
+# CHROMA_PORT=8000
+# CHROMA_COLLECTION=documents
+'@ | Set-Content -Encoding UTF8 .env.example
