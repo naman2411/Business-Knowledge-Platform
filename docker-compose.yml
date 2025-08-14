@@ -1,0 +1,24 @@
+﻿version: "3.9"
+services:
+  api:
+    build: ./backend
+    env_file: .env
+    ports: ["8000:8000"]
+    volumes:
+      - ./data/files:/data/files
+    depends_on: [mongo, chroma]
+  mongo:
+    image: mongo:7
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: bkp
+      MONGO_INITDB_ROOT_PASSWORD: bkp
+    ports: ["27017:27017"]
+  chroma:
+    image: chromadb/chroma:latest
+    restart: always
+    ports: ["8001:8000"]
+    volumes:
+      - chroma:/chroma
+volumes:
+  chroma:

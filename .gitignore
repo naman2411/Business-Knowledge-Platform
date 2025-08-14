@@ -1,0 +1,30 @@
+﻿# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.venv/
+venv/
+.env
+.env.*
+# Node / Frontend
+node_modules/
+.next/
+out/
+build/
+dist/
+coverage/
+*.log
+# App data / local artifacts
+**/chroma-data/
+**/uploads/
+**/tmp/
+**/*.db
+**/*.sqlite*
+# Misc
+*.bak
+*.swp
