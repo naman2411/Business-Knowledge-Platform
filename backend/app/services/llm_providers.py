@@ -1,11 +1,11 @@
-﻿# app/services/llm_providers.py
+
 import os, json, requests
-# ---- Ollama ----
+
 class OllamaProvider:
     def __init__(self, url=None, model=None):
         self.url = url or os.getenv("OLLAMA_URL", "http://127.0.0.1:11434")
         self.model = model or os.getenv("LLM_MODEL", "llama3.1:8b")
-        # Force generate endpoint if desired: set OLLAMA_USE_GENERATE=1
+        
         self.use_generate = str(os.getenv("OLLAMA_USE_GENERATE", "")).lower() in ("1","true","yes")
     def _compose_prompt(self, messages):
         sys = next((m["content"] for m in messages if m.get("role") == "system"), None)
@@ -26,7 +26,7 @@ class OllamaProvider:
                 stream=True, timeout=timeout,
             )
             if r.status_code == 404:
-                self.use_generate = True  # fall back
+                self.use_generate = True  
             else:
                 r.raise_for_status()
                 for line in r.iter_lines(decode_unicode=True):
@@ -35,7 +35,7 @@ class OllamaProvider:
                     delta = (data.get("message") or {}).get("content", "")
                     if delta: yield delta
                 return
-        # /api/generate (stream)
+        
         gen_prompt = self._compose_prompt(msgs)
         r = requests.post(
             f"{self.url}/api/generate",
@@ -65,7 +65,7 @@ class OllamaProvider:
                 r.raise_for_status()
                 data = r.json()
                 return (data.get("message") or {}).get("content", "")
-        # /api/generate (non-stream)
+       
         gen_prompt = self._compose_prompt(msgs)
         r = requests.post(
             f"{self.url}/api/generate",
@@ -75,11 +75,11 @@ class OllamaProvider:
         r.raise_for_status()
         data = r.json()
         return data.get("response", "")
-# ---- OpenAI (optional primary) ----
+
 class OpenAIProvider:
     def __init__(self, model=None):
         self.model = model or os.getenv("OPENAI_MODEL", "o4-mini")
-        from openai import OpenAI  # import here to avoid hard dep at import time
+        from openai import OpenAI  
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     def complete(self, prompt, system=None):
         if system:
