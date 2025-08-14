@@ -1,7 +1,7 @@
 ﻿from typing import List, Dict, Tuple, AsyncGenerator
 from app.core.config import settings
 import asyncio
-# We import lazily where needed to avoid import errors if packages/configs are missing.
+
 def _format_context(hits: List[Dict]) -> str:
     return "\n\n".join([(h.get("text") or "")[:1000] for h in hits if h.get("text")])
 def _used_sources(hits: List[Dict]) -> List[Dict]:
@@ -21,7 +21,7 @@ def answer_with_context(query: str, hits: List[Dict]) -> Tuple[str, List[Dict]]:
     context = _format_context(hits)
     used = _used_sources(hits)
     openai_key = getattr(settings, "openai_api_key", None)
-    # Fallback (no key)
+    
     if not openai_key:
         answer = (
             "Summary (fallback): "
@@ -30,7 +30,7 @@ def answer_with_context(query: str, hits: List[Dict]) -> Tuple[str, List[Dict]]:
             + (context[:400] if context else "(no context)")
         )
         return answer, used
-    # OpenAI path
+    
     try:
         from openai import OpenAI
         client = OpenAI(api_key=openai_key)
@@ -49,7 +49,7 @@ def answer_with_context(query: str, hits: List[Dict]) -> Tuple[str, List[Dict]]:
         ans = resp.choices[0].message.content or ""
         return ans, used
     except Exception as e:
-        # Final fallback
+        
         return f"(LLM error; fallback text) {e}\n\n{context[:500]}", used
 async def stream_answer(query: str, hits: List[Dict]) -> AsyncGenerator[str, None]:
     """
@@ -58,7 +58,7 @@ async def stream_answer(query: str, hits: List[Dict]) -> AsyncGenerator[str, Non
     """
     context = _format_context(hits)
     openai_key = getattr(settings, "openai_api_key", None)
-    # Try OpenAI streaming
+    
     if openai_key:
         try:
             from openai import OpenAI
@@ -88,8 +88,8 @@ async def stream_answer(query: str, hits: List[Dict]) -> AsyncGenerator[str, Non
                     yield piece
             return
         except Exception:
-            pass  # fall through to Ollama/fallback
-    # Try Ollama if configured
+            pass  
+    
     provider = str(getattr(settings, "llm_provider", "openai")).lower()
     if provider == "ollama":
         import json, requests
@@ -115,7 +115,7 @@ async def stream_answer(query: str, hits: List[Dict]) -> AsyncGenerator[str, Non
                     if not line:
                         await asyncio.sleep(0)
                         continue
-                    # Ollama streams JSONL lines like: {"message":{"role":"assistant","content":"..."}, "done":false}
+                   
                     try:
                         obj = json.loads(line)
                     except Exception:
@@ -125,8 +125,8 @@ async def stream_answer(query: str, hits: List[Dict]) -> AsyncGenerator[str, Non
                         yield msg
             return
         except Exception:
-            pass  # fall through
-    # Final fallback: call non-streaming and yield in chunks
+            pass  
+    
     ans, _ = answer_with_context(query, hits)
     for i in range(0, len(ans), 64):
         yield ans[i:i+64]
