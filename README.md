@@ -7,7 +7,7 @@ FastAPI backend (Mongo + Chroma-ready) with LLM chat (OpenAI → Ollama fallback
 - **/api/documents/** — upload & list documents
 - **/api/knowledge/** — for getting summary of the documents
 - **/api/** — health/status
-> Note: `/api/analytics/*` and `/api/knowledge/*` are currently **disabled** (commented out in `main.py`).
+
 
 ---
 
